@@ -1,13 +1,13 @@
-import React, { Suspense, lazy } from 'react'
-import { Switch, Route, Redirect } from 'react-router-dom'
-import LoadingSpinner from '../../components/LoadingSpinner'
+import React, { Suspense, lazy } from 'react';
+import { Switch, Route, Redirect } from 'react-router-dom';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
-const SignIn = lazy(() => import('../SignIn'))
-const SignUp = lazy(() => import('../SignUp'))
-const Profile = lazy(() => import('../Profile'))
-const VerifyEmail = lazy(() => import('../VerifyEmail'))
-const Users = lazy(() => import('../Users'))
-const Apartments = lazy(() => import('../Apartments'))
+const SignIn = lazy(() => import('../SignIn'));
+const SignUp = lazy(() => import('../SignUp'));
+const Profile = lazy(() => import('../Profile'));
+const VerifyEmail = lazy(() => import('../VerifyEmail'));
+const Users = lazy(() => import('../Users'));
+const Apartments = lazy(() => import('../Apartments'));
 
 const routes = (
   <Suspense fallback={<LoadingSpinner />}>
@@ -23,6 +23,6 @@ const routes = (
     </Switch>
   </Suspense>
 
-)
+);
 
-export default routes
+export default routes;

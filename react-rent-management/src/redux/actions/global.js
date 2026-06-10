@@ -1,9 +1,9 @@
-import { createActions } from 'reduxsauce'
+import { createActions } from 'reduxsauce';
 
 const { Types, Creators } = createActions({
-  updateState       : ['payload'],
-  openEditApartment : ['open', 'apartmentId'],
-  openEditUser      : ['open', 'userId'],
-}, { prefix: 'global_' })
+  updateState: ['payload'],
+  openEditApartment: ['open', 'apartmentId'],
+  openEditUser: ['open', 'userId'],
+}, { prefix: 'global_' });
 
-export { Types, Creators }
+export { Types, Creators };

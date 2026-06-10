@@ -9,33 +9,33 @@
 const jsonSpec = (subject, schema) => {
   // If this is a mongo object, convert it to a plain JS Object
   if (typeof subject.toObject === 'function') {
-    subject = subject.toObject()
+    subject = subject.toObject();
   }
 
   // If subject is an array, recursively iterate through each element
   if (Array.isArray(schema) && Array.isArray(subject)) {
     return subject.map((item) => {
       if (typeof item === 'object') {
-        return jsonSpec(item, schema[0])
+        return jsonSpec(item, schema[0]);
       }
-      return item
-    })
+      return item;
+    });
   }
 
   // Pick out the keys in the subject that match the schema
   subject = Object.keys(subject)
-    .filter(key => Object.keys(schema).indexOf(key) >= 0)
-    .reduce((newObj, key) => Object.assign(newObj, { [key]: subject[key] }), {})
+    .filter((key) => Object.keys(schema).indexOf(key) >= 0)
+    .reduce((newObj, key) => Object.assign(newObj, { [key]: subject[key] }), {});
 
   // Recursively walk through each element in the object
   Object.keys(schema).forEach((key) => {
     if (
       subject[key] !== null && schema[key] !== true && typeof subject[key] === typeof schema[key]
     ) {
-      subject[key] = jsonSpec(subject[key], schema[key])
+      subject[key] = jsonSpec(subject[key], schema[key]);
     }
-  })
-  return subject
-}
+  });
+  return subject;
+};
 
-module.exports = jsonSpec
+module.exports = jsonSpec;

@@ -1,28 +1,28 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { push } from 'connected-react-router'
-import { Link } from 'react-router-dom'
-import PropTypes from 'prop-types'
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import {
   Button,
   AppBar,
   Toolbar,
   Typography,
-  IconButton
-} from '@material-ui/core'
-import AccountCircle from '@material-ui/icons/AccountCircle'
-import { Creators } from '../../redux/actions/auth'
-import { USER_TYPE } from '../../constants'
-import './styles.scss'
+  IconButton,
+} from '@mui/material';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import { changeLocation as navigateTo } from '../../navigation';
+import { Creators } from '../../redux/actions/auth';
+import { USER_TYPE } from '../../constants';
+import './styles.scss';
 
 class View extends Component {
   onSignOut = () => {
-    const { signOut } = this.props
-    signOut()
-  }
+    const { signOut } = this.props;
+    signOut();
+  };
 
   render() {
-    const { auth, changeLocation } = this.props
+    const { auth, changeLocation } = this.props;
     return (
       <AppBar position="static" className="header">
         <Toolbar>
@@ -50,22 +50,22 @@ class View extends Component {
           </Button>
         </Toolbar>
       </AppBar>
-    )
+    );
   }
 }
 
 View.propTypes = {
-  auth           : PropTypes.object.isRequired,
-  signOut        : PropTypes.func.isRequired,
-  changeLocation : PropTypes.func.isRequired,
-}
+  auth: PropTypes.object.isRequired,
+  signOut: PropTypes.func.isRequired,
+  changeLocation: PropTypes.func.isRequired,
+};
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   auth: store.auth,
-})
+});
 const mapDispatchToProps = {
   ...Creators,
-  changeLocation: push,
-}
+  changeLocation: navigateTo,
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(View)
+export default connect(mapStateToProps, mapDispatchToProps)(View);

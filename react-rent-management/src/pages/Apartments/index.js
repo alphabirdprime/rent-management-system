@@ -1,92 +1,92 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { push } from 'connected-react-router'
-import PropTypes from 'prop-types'
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api'
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import {
   Button,
   TextField,
   Grid,
-  MenuItem
-} from '@material-ui/core'
-import { FixedSizeList } from 'react-window'
-import ApartmentCard from './ApartmentCard'
-import Header from '../../components/Header'
-import LoadingSpinner from '../../components/LoadingSpinner'
-import AlertDialog from '../../components/AlertDialog'
-import { Creators, Types } from '../../redux/actions/apartment'
-import { Creators as globalCreators } from '../../redux/actions/global'
-import { goToDefaultPage } from '../../functions'
-import { ACTION_STATUS, USER_TYPE, APARTMENT_STATE } from '../../constants'
-import config from '../../config'
-import './styles.scss'
+  MenuItem,
+} from '@mui/material';
+import { FixedSizeList } from 'react-window';
+import { changeLocation as navigateTo } from '../../navigation';
+import ApartmentCard from './ApartmentCard';
+import Header from '../../components/Header';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import AlertDialog from '../../components/AlertDialog';
+import { Creators, Types } from '../../redux/actions/apartment';
+import { Creators as globalCreators } from '../../redux/actions/global';
+import { goToDefaultPage } from '../../functions';
+import { ACTION_STATUS, USER_TYPE, APARTMENT_STATE } from '../../constants';
+import config from '../../config';
+import './styles.scss';
 
-const STATE_ALL = 'all'
+const STATE_ALL = 'all';
 
 class View extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
-      isOpenDelete : false,
-      selectedId   : null,
-      state        : STATE_ALL,
-      minSize      : '',
-      maxSize      : '',
-      minPrice     : '',
-      maxPrice     : '',
-      minRooms     : '',
-      maxRooms     : '',
-      width        : 0,
-      height       : 0,
-      mapCenter    : { lat: 36, lng: -120 },
-      mapLoaded    : false
-    }
+      isOpenDelete: false,
+      selectedId: null,
+      state: STATE_ALL,
+      minSize: '',
+      maxSize: '',
+      minPrice: '',
+      maxPrice: '',
+      minRooms: '',
+      maxRooms: '',
+      width: 0,
+      height: 0,
+      mapCenter: { lat: 36, lng: -120 },
+      mapLoaded: false,
+    };
   }
 
-  componentDidMount = () => {
-    const { auth, changeLocation } = this.props
+  componentDidMount() {
+    const { auth, changeLocation } = this.props;
     if (!auth.user) {
-      goToDefaultPage(auth.user, changeLocation)
-      return
+      goToDefaultPage(auth.user, changeLocation);
+      return;
     }
-    this.updateWindowDimensions()
-    window.addEventListener('resize', this.updateWindowDimensions)
-    this.search()
+    this.updateWindowDimensions();
+    window.addEventListener('resize', this.updateWindowDimensions);
+    this.search();
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this.updateWindowDimensions)
+    window.removeEventListener('resize', this.updateWindowDimensions);
   }
 
-  componentDidUpdate = (prevProps) => {
-    const { auth: prevAuth } = prevProps
-    const { auth, changeLocation } = this.props
+  componentDidUpdate(prevProps) {
+    const { auth: prevAuth } = prevProps;
+    const { auth, changeLocation } = this.props;
     if (prevAuth.user && !auth.user) {
-      goToDefaultPage(auth.user, changeLocation)
+      goToDefaultPage(auth.user, changeLocation);
     }
   }
 
   updateWindowDimensions = () => {
-    this.setState({ width: window.innerWidth, height: window.innerHeight })
-  }
+    this.setState({ width: window.innerWidth, height: window.innerHeight });
+  };
 
-  onChangeValue = fieldName => (event) => {
-    this.setState({ [fieldName]: event.target.value })
-  }
+  onChangeValue = (fieldName) => (event) => {
+    this.setState({ [fieldName]: event.target.value });
+  };
 
   onClickItem = (data) => {
-    this.setState({ mapCenter: { lat: data.latitude, lng: data.longitude } })
-  }
+    this.setState({ mapCenter: { lat: data.latitude, lng: data.longitude } });
+  };
 
   deleteApartment = () => {
-    const { deleteApartment } = this.props
-    const { selectedId } = this.state
-    this.setState({ isOpenDelete: false })
-    deleteApartment(selectedId)
-  }
+    const { deleteApartment } = this.props;
+    const { selectedId } = this.state;
+    this.setState({ isOpenDelete: false });
+    deleteApartment(selectedId);
+  };
 
   search = () => {
-    const { auth, listApartments } = this.props
+    const { auth, listApartments } = this.props;
     const {
       state,
       minSize,
@@ -94,23 +94,23 @@ class View extends Component {
       minPrice,
       maxPrice,
       minRooms,
-      maxRooms
-    } = this.state
-    const queryParams = {}
+      maxRooms,
+    } = this.state;
+    const queryParams = {};
     if (state !== STATE_ALL && auth.user.userType !== USER_TYPE.CLIENT) {
-      queryParams.state = state
+      queryParams.state = state;
     }
-    if (minSize)  queryParams.minSize = minSize
-    if (maxSize)  queryParams.maxSize = maxSize
-    if (minPrice) queryParams.minPrice = minPrice
-    if (maxPrice) queryParams.maxPrice = maxPrice
-    if (minRooms) queryParams.minRooms = minRooms
-    if (maxRooms) queryParams.maxRooms = maxRooms
-    listApartments(queryParams)
-  }
+    if (minSize) queryParams.minSize = minSize;
+    if (maxSize) queryParams.maxSize = maxSize;
+    if (minPrice) queryParams.minPrice = minPrice;
+    if (maxPrice) queryParams.maxPrice = maxPrice;
+    if (minRooms) queryParams.minRooms = minRooms;
+    if (maxRooms) queryParams.maxRooms = maxRooms;
+    listApartments(queryParams);
+  };
 
   renderControlBar() {
-    const { auth, openEditApartment } = this.props
+    const { auth, openEditApartment } = this.props;
     const {
       state,
       minSize,
@@ -118,8 +118,8 @@ class View extends Component {
       minPrice,
       maxPrice,
       minRooms,
-      maxRooms
-    } = this.state
+      maxRooms,
+    } = this.state;
     return (
       <div className="control-bar">
         <p> Floor area size </p>
@@ -132,7 +132,9 @@ class View extends Component {
             size="small"
             placeholder="min"
           />
-          &nbsp;<span> - </span>&nbsp;
+          &nbsp;
+          <span> - </span>
+&nbsp;
           <TextField
             value={maxSize}
             onChange={this.onChangeValue('maxSize')}
@@ -152,7 +154,9 @@ class View extends Component {
             size="small"
             placeholder="min"
           />
-          &nbsp;<span> - </span>&nbsp;
+          &nbsp;
+          <span> - </span>
+&nbsp;
           <TextField
             value={maxPrice}
             onChange={this.onChangeValue('maxPrice')}
@@ -172,7 +176,9 @@ class View extends Component {
             size="small"
             placeholder="min"
           />
-          &nbsp;<span> - </span>&nbsp;
+          &nbsp;
+          <span> - </span>
+&nbsp;
           <TextField
             value={maxRooms}
             onChange={this.onChangeValue('maxRooms')}
@@ -193,14 +199,16 @@ class View extends Component {
             <MenuItem key={STATE_ALL} value={STATE_ALL}>
               {STATE_ALL}
             </MenuItem>
-            { Object.keys(APARTMENT_STATE).map(stateKey => (
+            { Object.keys(APARTMENT_STATE).map((stateKey) => (
               <MenuItem key={stateKey} value={APARTMENT_STATE[stateKey]}>
                 {APARTMENT_STATE[stateKey]}
               </MenuItem>
             ))}
           </TextField>
         )}
-        <br /> <br />
+        <br />
+        {' '}
+        <br />
         <Button
           className="search-button"
           variant="contained"
@@ -209,7 +217,9 @@ class View extends Component {
         >
           Search
         </Button>
-        <br /> <br />
+        <br />
+        {' '}
+        <br />
         { auth.user.userType !== USER_TYPE.CLIENT && (
           <Button
             className="new-button"
@@ -221,19 +231,23 @@ class View extends Component {
           </Button>
         )}
       </div>
-    )
+    );
   }
 
   render() {
-    const { global: { status }, auth, apartment, openEditApartment, loadMore } = this.props
-    const { isOpenDelete, width, height, mapCenter, mapLoaded } = this.state
-    if (!auth.user) return null
+    const {
+      global: { status }, auth, apartment, openEditApartment, loadMore,
+    } = this.props;
+    const {
+      isOpenDelete, width, height, mapCenter, mapLoaded,
+    } = this.state;
+    if (!auth.user) return null;
 
     const loadingTypes = [
       Types.LIST_APARTMENTS,
       Types.DELETE_APARTMENT,
       Types.LOAD_MORE,
-    ]
+    ];
     return (
       <div className="apartments-page">
         <Header />
@@ -242,7 +256,13 @@ class View extends Component {
             { this.renderControlBar() }
           </Grid>
           <Grid className="page-column" item xs={6}>
-            <p className="total-counts"> { apartment.totalCounts } found </p>
+            <p className="total-counts">
+              {' '}
+              { apartment.totalCounts }
+              {' '}
+              found
+              {' '}
+            </p>
             <FixedSizeList
               height={height - 90 - 30 - 50 - 36}
               width={width / 2 - 30}
@@ -267,7 +287,9 @@ class View extends Component {
                 color="primary"
                 onClick={() => loadMore()}
               >
-                Load More ({apartment.loadMore})
+                Load More (
+                {apartment.loadMore}
+                )
               </Button>
             )}
           </Grid>
@@ -280,7 +302,7 @@ class View extends Component {
                 zoom={3}
                 onLoad={() => this.setState({ mapLoaded: true })}
               >
-                {apartment.apartments.map(data => (
+                {apartment.apartments.map((data) => (
                   <Marker
                     key={data._id}
                     position={{ lat: data.latitude, lng: data.longitude }}
@@ -300,33 +322,33 @@ class View extends Component {
           title="Are you sure?"
           description="It will be removed."
         />
-        { loadingTypes.map(t => status[t]).includes(ACTION_STATUS.REQUEST)
+        { loadingTypes.map((t) => status[t]).includes(ACTION_STATUS.REQUEST)
           && <LoadingSpinner /> }
       </div>
-    )
+    );
   }
 }
 
 View.propTypes = {
-  global            : PropTypes.object.isRequired,
-  auth              : PropTypes.object.isRequired,
-  apartment         : PropTypes.object.isRequired,
-  listApartments    : PropTypes.func.isRequired,
-  loadMore          : PropTypes.func.isRequired,
-  deleteApartment   : PropTypes.func.isRequired,
-  openEditApartment : PropTypes.func.isRequired,
-  changeLocation    : PropTypes.func.isRequired,
-}
+  global: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired,
+  apartment: PropTypes.object.isRequired,
+  listApartments: PropTypes.func.isRequired,
+  loadMore: PropTypes.func.isRequired,
+  deleteApartment: PropTypes.func.isRequired,
+  openEditApartment: PropTypes.func.isRequired,
+  changeLocation: PropTypes.func.isRequired,
+};
 
-const mapStateToProps = store => ({
-  auth      : store.auth,
-  apartment : store.apartment,
-  global    : store.global,
-})
+const mapStateToProps = (store) => ({
+  auth: store.auth,
+  apartment: store.apartment,
+  global: store.global,
+});
 const mapDispatchToProps = {
   ...Creators,
   ...globalCreators,
-  changeLocation: push,
-}
+  changeLocation: navigateTo,
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(View)
+export default connect(mapStateToProps, mapDispatchToProps)(View);

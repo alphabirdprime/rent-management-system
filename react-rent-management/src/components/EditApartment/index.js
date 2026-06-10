@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import {
   Button,
   Dialog,
@@ -8,50 +8,50 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  MenuItem
-} from '@material-ui/core'
-import { Creators as apartmentCreators } from '../../redux/actions/apartment'
-import { Creators as globalCreators } from '../../redux/actions/global'
-import { APARTMENT_STATE } from '../../constants'
-import './styles.scss'
+  MenuItem,
+} from '@mui/material';
+import { Creators as apartmentCreators } from '../../redux/actions/apartment';
+import { Creators as globalCreators } from '../../redux/actions/global';
+import { APARTMENT_STATE } from '../../constants';
+import './styles.scss';
 
-const COORDINATES = 'coordinates'
-const ADDRESS = 'address'
+const COORDINATES = 'coordinates';
+const ADDRESS = 'address';
 const initialState = {
-  name        : '',
-  description : '',
-  size        : '',
-  price       : '',
-  rooms       : '',
-  latitude    : '',
-  longitude   : '',
-  address     : '',
-  state       : APARTMENT_STATE.RENTABLE,
-  addressType : COORDINATES,
-}
+  name: '',
+  description: '',
+  size: '',
+  price: '',
+  rooms: '',
+  latitude: '',
+  longitude: '',
+  address: '',
+  state: APARTMENT_STATE.RENTABLE,
+  addressType: COORDINATES,
+};
 class View extends Component {
   constructor(props) {
-    super(props)
-    this.state = { ...initialState }
+    super(props);
+    this.state = { ...initialState };
   }
 
-  componentDidUpdate = (prevProps) => {
-    const { global: prevGlobal } = prevProps
-    const { global, apartment } = this.props
+  componentDidUpdate(prevProps) {
+    const { global: prevGlobal } = prevProps;
+    const { global, apartment } = this.props;
 
     if (!prevGlobal.editApartment.open && global.editApartment.open) {
       // Initialize state
       if (global.editApartment.apartmentId) {
         const currentOne = apartment.apartments.find(
-          one => one._id === global.editApartment.apartmentId
-        )
+          (one) => one._id === global.editApartment.apartmentId,
+        );
         this.setState({
           ...currentOne,
-          address     : currentOne.address || '',
-          addressType : currentOne.address ? ADDRESS : COORDINATES
-        })
+          address: currentOne.address || '',
+          addressType: currentOne.address ? ADDRESS : COORDINATES,
+        });
       } else {
-        this.setState({ ...initialState })
+        this.setState({ ...initialState });
       }
     }
   }
@@ -61,34 +61,34 @@ class View extends Component {
       global,
       editApartment,
       addApartment,
-    } = this.props
+    } = this.props;
     const {
-      name, description, size, price, rooms, latitude, longitude, address, state, addressType
-    } = this.state
+      name, description, size, price, rooms, latitude, longitude, address, state, addressType,
+    } = this.state;
     const apartmentData = {
-      name, description, size, price, rooms, state
-    }
+      name, description, size, price, rooms, state,
+    };
     if (addressType === ADDRESS) {
-      Object.assign(apartmentData, { address })
+      Object.assign(apartmentData, { address });
     } else {
-      Object.assign(apartmentData, { latitude, longitude })
+      Object.assign(apartmentData, { latitude, longitude });
     }
     if (global.editApartment.apartmentId) {
-      editApartment(global.editApartment.apartmentId, apartmentData)
+      editApartment(global.editApartment.apartmentId, apartmentData);
     } else {
-      addApartment(apartmentData)
+      addApartment(apartmentData);
     }
-  }
+  };
 
-  onChangeValue = fieldName => (event) => {
-    this.setState({ [fieldName]: event.target.value })
-  }
+  onChangeValue = (fieldName) => (event) => {
+    this.setState({ [fieldName]: event.target.value });
+  };
 
   render() {
-    const { global, openEditApartment } = this.props
+    const { global, openEditApartment } = this.props;
     const {
-      name, description, size, price, rooms, latitude, longitude, address, state, addressType
-    } = this.state
+      name, description, size, price, rooms, latitude, longitude, address, state, addressType,
+    } = this.state;
     const enabled = Boolean(
       name && description
       && Number(size) > 0
@@ -99,8 +99,8 @@ class View extends Component {
           && latitude && Math.abs(Number(latitude)) <= 90
           && longitude && Math.abs(Number(longitude)) <= 180)
         || (addressType === ADDRESS && address)
-      )
-    )
+      ),
+    );
     return (
       <Dialog
         className="apartment-dialog"
@@ -127,7 +127,7 @@ class View extends Component {
             margin="dense"
             label="Description"
             multiline
-            rowsMax={2}
+            maxRows={2}
             required
             fullWidth
           />
@@ -171,12 +171,14 @@ class View extends Component {
             value={state}
             onChange={this.onChangeValue('state')}
           >
-            { Object.keys(APARTMENT_STATE).map(stateKey => (
+            { Object.keys(APARTMENT_STATE).map((stateKey) => (
               <MenuItem key={stateKey} value={APARTMENT_STATE[stateKey]}>
                 {APARTMENT_STATE[stateKey]}
               </MenuItem>
             ))}
-          </TextField> <br />
+          </TextField>
+          {' '}
+          <br />
           <TextField
             select
             value={addressType}
@@ -237,25 +239,25 @@ class View extends Component {
           </Button>
         </DialogActions>
       </Dialog>
-    )
+    );
   }
 }
 
 View.propTypes = {
-  apartment         : PropTypes.object.isRequired,
-  global            : PropTypes.object.isRequired,
-  editApartment     : PropTypes.func.isRequired,
-  addApartment      : PropTypes.func.isRequired,
-  openEditApartment : PropTypes.func.isRequired,
-}
+  apartment: PropTypes.object.isRequired,
+  global: PropTypes.object.isRequired,
+  editApartment: PropTypes.func.isRequired,
+  addApartment: PropTypes.func.isRequired,
+  openEditApartment: PropTypes.func.isRequired,
+};
 
-const mapStateToProps = store => ({
-  apartment : store.apartment,
-  global    : store.global,
-})
+const mapStateToProps = (store) => ({
+  apartment: store.apartment,
+  global: store.global,
+});
 const mapDispatchToProps = {
   ...globalCreators,
-  ...apartmentCreators
-}
+  ...apartmentCreators,
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(View)
+export default connect(mapStateToProps, mapDispatchToProps)(View);

@@ -1,20 +1,19 @@
-const express    = require('express')
-const logger     = require('morgan')
-const bodyParser = require('body-parser')
-const fs         = require('fs')
-const cors       = require('cors')
-const jwt        = require('jsonwebtoken')
-const jsonSpec   = require('json-spec')
-const join       = require('path').join
+const express = require('express');
+const logger = require('morgan');
+const fs = require('fs');
+const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const jsonSpec = require('json-spec');
+const { join } = require('path');
 const {
-  USER_SPEC
-} = require('./server/constants')
+  USER_SPEC,
+} = require('./server/constants');
 
-const app = express()
-app.use(cors())
-app.use(logger('dev'))
-app.use(bodyParser.json({ limit: '100mb' }))
-app.use(bodyParser.urlencoded({ limit: '100mb', extended: false }))
+const app = express();
+app.use(cors());
+app.use(logger('dev'));
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ limit: '100mb', extended: false }));
 
 // Load DB models
 /* eslint-disable */
@@ -28,14 +27,14 @@ app.use(async (req, res, next) => {
   // Authorization: Bearer <token>
   try {
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
-      const decoded = jwt.verify(req.headers.authorization.split(' ')[1], process.env.JWT_SECRET)
-      req.user = jsonSpec(decoded, USER_SPEC)
+      const decoded = jwt.verify(req.headers.authorization.split(' ')[1], process.env.JWT_SECRET);
+      req.user = jsonSpec(decoded, USER_SPEC);
     }
   } catch (err) {
     // nothing to do
   }
-  next()
-})
+  next();
+});
 
 // Load routes
 /* eslint-disable */
@@ -50,15 +49,15 @@ fs.readdirSync(routes)
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
-  const err = new Error('Not Found')
-  err.status = 404
-  next(err)
-})
+  const err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
 
 // error handlers
-app.use((err, req, res) => {
-  res.status(err.status || 500)
-  res.json({ err })
-})
+app.use((err, req, res, _next) => {
+  res.status(err.status || 500);
+  res.json({ err });
+});
 
-module.exports = app
+module.exports = app;

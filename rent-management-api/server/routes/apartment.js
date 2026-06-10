@@ -1,22 +1,22 @@
-const router     = require('express').Router()
-const controller = require('../controllers/apartment')
+const router = require('express').Router();
+const controller = require('../controllers/apartment');
 
 router.use((req, res, next) => {
   if (req.user) {
-    next()
+    next();
   } else {
-    res.status(401).json({ err: 'Authorization error' })
+    res.status(401).json({ err: 'Authorization error' });
   }
-})
+});
 
-router.post('/', controller.createApartment)
+router.post('/', controller.createApartment);
 
-router.get('/list', controller.listApartments)
+router.get('/list', controller.listApartments);
 
-router.get('/:apartmentId', controller.getApartment)
+router.get('/:apartmentId', controller.getApartment);
 
-router.delete('/:apartmentId', controller.deleteApartment)
+router.delete('/:apartmentId', controller.deleteApartment);
 
-router.patch('/:apartmentId', controller.editApartment)
+router.patch('/:apartmentId', controller.editApartment);
 
-module.exports = router
+module.exports = router;

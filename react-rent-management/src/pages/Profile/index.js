@@ -1,65 +1,64 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { push } from 'connected-react-router'
-import PropTypes from 'prop-types'
-import { Button, Chip, TextField } from '@material-ui/core'
-import Header from '../../components/Header'
-import LoadingSpinner from '../../components/LoadingSpinner'
-import AlertDialog from '../../components/AlertDialog'
-import { goToDefaultPage } from '../../functions'
-import { Creators, Types } from '../../redux/actions/user'
-import { ACTION_STATUS, AUTH_TYPE } from '../../constants'
-import './styles.scss'
-
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { Button, Chip, TextField } from '@mui/material';
+import { changeLocation as navigateTo } from '../../navigation';
+import Header from '../../components/Header';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import AlertDialog from '../../components/AlertDialog';
+import { goToDefaultPage } from '../../functions';
+import { Creators, Types } from '../../redux/actions/user';
+import { ACTION_STATUS, AUTH_TYPE } from '../../constants';
+import './styles.scss';
 
 class View extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
-      isOpenDelete : false,
-      old          : '',
-      password     : '',
-      confirm      : ''
-    }
+      isOpenDelete: false,
+      old: '',
+      password: '',
+      confirm: '',
+    };
   }
 
-  componentDidMount = () => {
-    const { auth, changeLocation } = this.props
+  componentDidMount() {
+    const { auth, changeLocation } = this.props;
     if (!auth.user) {
-      goToDefaultPage(auth.user, changeLocation)
+      goToDefaultPage(auth.user, changeLocation);
     }
   }
 
-  componentDidUpdate = (prevProps) => {
+  componentDidUpdate(prevProps) {
     const {
       auth: prevAuth,
-      global: { status : prevStatus }
-    } = prevProps
+      global: { status: prevStatus },
+    } = prevProps;
     const {
       auth,
       global: { status },
-      changeLocation
-    } = this.props
+      changeLocation,
+    } = this.props;
     if (prevAuth.user && !auth.user) {
-      goToDefaultPage(auth.user, changeLocation)
+      goToDefaultPage(auth.user, changeLocation);
     }
     if (prevStatus[Types.CHANGE_PASSWORD] !== status[Types.CHANGE_PASSWORD]
       && status[Types.CHANGE_PASSWORD] === ACTION_STATUS.SUCCESS) {
       this.setState({
-        old      : '',
-        password : '',
-        confirm  : ''
-      })
+        old: '',
+        password: '',
+        confirm: '',
+      });
     }
   }
 
-  onChangeValue = fieldName => (event) => {
-    this.setState({ [fieldName]: event.target.value })
-  }
+  onChangeValue = (fieldName) => (event) => {
+    this.setState({ [fieldName]: event.target.value });
+  };
 
   renderChangePassword() {
-    const { changePassword } = this.props
-    const { old, password, confirm } = this.state
+    const { changePassword } = this.props;
+    const { old, password, confirm } = this.state;
     return (
       <>
         <TextField
@@ -92,7 +91,8 @@ class View extends Component {
           fullWidth
           required
         />
-        <br /><br />
+        <br />
+        <br />
         <Button
           variant="contained"
           color="primary"
@@ -102,18 +102,18 @@ class View extends Component {
           Change password
         </Button>
       </>
-    )
+    );
   }
 
   render() {
-    const { global: { status }, auth, deleteSelf } = this.props
-    const { isOpenDelete } = this.state
-    if (!auth.user) return null
+    const { global: { status }, auth, deleteSelf } = this.props;
+    const { isOpenDelete } = this.state;
+    if (!auth.user) return null;
 
     const loadingTypes = [
       Types.DELETE_SELF,
       Types.CHANGE_PASSWORD,
-    ]
+    ];
     return (
       <div className="profile-page">
         <Header />
@@ -134,7 +134,8 @@ class View extends Component {
           >
             Delete my account
           </Button>
-          <br /><br />
+          <br />
+          <br />
           { auth.user.authType === AUTH_TYPE.EMAIL && (
             this.renderChangePassword()
           )}
@@ -153,7 +154,7 @@ class View extends Component {
             />
           )}
         </div>
-        { loadingTypes.map(t => status[t]).includes(ACTION_STATUS.REQUEST)
+        { loadingTypes.map((t) => status[t]).includes(ACTION_STATUS.REQUEST)
           && <LoadingSpinner /> }
         <AlertDialog
           open={isOpenDelete}
@@ -163,25 +164,25 @@ class View extends Component {
           description="Your account will be removed."
         />
       </div>
-    )
+    );
   }
 }
 
 View.propTypes = {
-  global         : PropTypes.object.isRequired,
-  auth           : PropTypes.object.isRequired,
-  deleteSelf     : PropTypes.func.isRequired,
-  changePassword : PropTypes.func.isRequired,
-  changeLocation : PropTypes.func.isRequired,
-}
+  global: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired,
+  deleteSelf: PropTypes.func.isRequired,
+  changePassword: PropTypes.func.isRequired,
+  changeLocation: PropTypes.func.isRequired,
+};
 
-const mapStateToProps = store => ({
-  auth   : store.auth,
-  global : store.global,
-})
+const mapStateToProps = (store) => ({
+  auth: store.auth,
+  global: store.global,
+});
 const mapDispatchToProps = {
   ...Creators,
-  changeLocation: push,
-}
+  changeLocation: navigateTo,
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(View)
+export default connect(mapStateToProps, mapDispatchToProps)(View);

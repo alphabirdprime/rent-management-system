@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import {
   Button,
   Dialog,
@@ -11,47 +11,47 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
-  Switch
-} from '@material-ui/core'
-import { Creators } from '../../redux/actions/user'
-import { Creators as globalCreators } from '../../redux/actions/global'
-import { validateEmail } from '../../functions'
-import { USER_TYPE, AUTH_TYPE } from '../../constants'
-import './styles.scss'
+  Switch,
+} from '@mui/material';
+import { Creators } from '../../redux/actions/user';
+import { Creators as globalCreators } from '../../redux/actions/global';
+import { validateEmail } from '../../functions';
+import { USER_TYPE, AUTH_TYPE } from '../../constants';
+import './styles.scss';
 
 const initialState = {
-  facebookId    : '',
-  googleId      : '',
-  email         : '',
-  emailVerified : true,
-  password      : '',
-  needPassword  : true,
-  userType      : USER_TYPE.CLIENT,
-  authType      : AUTH_TYPE.EMAIL,
-}
+  facebookId: '',
+  googleId: '',
+  email: '',
+  emailVerified: true,
+  password: '',
+  needPassword: true,
+  userType: USER_TYPE.CLIENT,
+  authType: AUTH_TYPE.EMAIL,
+};
 class View extends Component {
   constructor(props) {
-    super(props)
-    this.state = { ...initialState }
+    super(props);
+    this.state = { ...initialState };
   }
 
-  componentDidUpdate = (prevProps) => {
-    const { global: prevGlobal } = prevProps
-    const { global, user } = this.props
+  componentDidUpdate(prevProps) {
+    const { global: prevGlobal } = prevProps;
+    const { global, user } = this.props;
 
     if (!prevGlobal.editUser.open && global.editUser.open) {
       // Initialize state
       if (global.editUser.userId) {
         const currentOne = user.users.find(
-          one => one._id === global.editUser.userId
-        )
+          (one) => one._id === global.editUser.userId,
+        );
         this.setState({
           ...currentOne,
-          password     : '',
-          needPassword : false,
-        })
+          password: '',
+          needPassword: false,
+        });
       } else {
-        this.setState({ ...initialState })
+        this.setState({ ...initialState });
       }
     }
   }
@@ -61,49 +61,51 @@ class View extends Component {
       global,
       editUser,
       addUser,
-    } = this.props
+    } = this.props;
     const {
-      facebookId, googleId, email, emailVerified, password, needPassword, userType, authType
-    } = this.state
-    let userData
+      facebookId, googleId, email, emailVerified, password, needPassword, userType, authType,
+    } = this.state;
+    let userData;
     if (authType === AUTH_TYPE.EMAIL) {
-      userData = Object.assign(
-        { email, emailVerified, userType },
-        needPassword ? { password } : {}
-      )
+      userData = {
+        email,
+        emailVerified,
+        userType,
+        ...(needPassword ? { password } : {}),
+      };
     }
     if (authType === AUTH_TYPE.GOOGLE) {
-      userData = { googleId, email, userType }
+      userData = { googleId, email, userType };
     }
     if (authType === AUTH_TYPE.FACEBOOK) {
-      userData = { facebookId, email, userType }
+      userData = { facebookId, email, userType };
     }
     if (global.editUser.userId) {
-      editUser(global.editUser.userId, userData)
+      editUser(global.editUser.userId, userData);
     } else {
-      addUser(userData)
+      addUser(userData);
     }
-  }
+  };
 
-  onChangeValue = fieldName => (event) => {
-    this.setState({ [fieldName]: event.target.value })
-  }
+  onChangeValue = (fieldName) => (event) => {
+    this.setState({ [fieldName]: event.target.value });
+  };
 
-  onChangeSwitch = fieldName => (event) => {
-    this.setState({ [fieldName]: event.target.checked })
-  }
+  onChangeSwitch = (fieldName) => (event) => {
+    this.setState({ [fieldName]: event.target.checked });
+  };
 
   render() {
-    const { auth, global, openEditUser } = this.props
+    const { auth, global, openEditUser } = this.props;
     const {
-      facebookId, googleId, email, emailVerified, password, needPassword, userType, authType
-    } = this.state
+      facebookId, googleId, email, emailVerified, password, needPassword, userType, authType,
+    } = this.state;
     const enabled = email && validateEmail(email) && Boolean(
       (authType === AUTH_TYPE.EMAIL && (!needPassword || password))
       || (authType === AUTH_TYPE.GOOGLE && googleId)
-      || (authType === AUTH_TYPE.FACEBOOK && facebookId)
-    )
-    const self = auth.user && auth.user._id === global.editUser.userId
+      || (authType === AUTH_TYPE.FACEBOOK && facebookId),
+    );
+    const self = auth.user && auth.user._id === global.editUser.userId;
     return (
       <Dialog
         className="user-dialog"
@@ -146,7 +148,9 @@ class View extends Component {
                 margin="normal"
                 fullWidth
                 required
-              /> <br />
+              />
+              {' '}
+              <br />
             </>
           )}
           { authType === AUTH_TYPE.GOOGLE && (
@@ -158,7 +162,9 @@ class View extends Component {
                 margin="normal"
                 fullWidth
                 required
-              /> <br />
+              />
+              {' '}
+              <br />
             </>
           )}
           <TextField
@@ -169,7 +175,9 @@ class View extends Component {
             margin="normal"
             fullWidth
             required
-          /> <br />
+          />
+          {' '}
+          <br />
           { authType === AUTH_TYPE.EMAIL && (
             <>
               <FormControlLabel
@@ -182,7 +190,9 @@ class View extends Component {
                 )}
                 label={emailVerified ? 'Verified email' : 'Not verified email'}
                 disabled={self}
-              /> <br />
+              />
+              {' '}
+              <br />
               { global.editUser.userId && (
                 <>
                   <FormControlLabel
@@ -194,7 +204,9 @@ class View extends Component {
                       />
                     )}
                     label="Change password"
-                  /> <br />
+                  />
+                  {' '}
+                  <br />
                 </>
               )}
               { needPassword && (
@@ -208,7 +220,9 @@ class View extends Component {
                     margin="normal"
                     fullWidth
                     required
-                  /> <br />
+                  />
+                  {' '}
+                  <br />
                 </>
               )}
             </>
@@ -228,27 +242,27 @@ class View extends Component {
           </Button>
         </DialogActions>
       </Dialog>
-    )
+    );
   }
 }
 
 View.propTypes = {
-  auth         : PropTypes.object.isRequired,
-  user         : PropTypes.object.isRequired,
-  global       : PropTypes.object.isRequired,
-  editUser     : PropTypes.func.isRequired,
-  addUser      : PropTypes.func.isRequired,
-  openEditUser : PropTypes.func.isRequired,
-}
+  auth: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired,
+  global: PropTypes.object.isRequired,
+  editUser: PropTypes.func.isRequired,
+  addUser: PropTypes.func.isRequired,
+  openEditUser: PropTypes.func.isRequired,
+};
 
-const mapStateToProps = store => ({
-  auth   : store.auth,
-  user   : store.user,
-  global : store.global,
-})
+const mapStateToProps = (store) => ({
+  auth: store.auth,
+  user: store.user,
+  global: store.global,
+});
 const mapDispatchToProps = {
   ...Creators,
   ...globalCreators,
-}
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(View)
+export default connect(mapStateToProps, mapDispatchToProps)(View);

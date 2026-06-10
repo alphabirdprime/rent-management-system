@@ -1,16 +1,16 @@
 /* eslint no-underscore-dangle: "off" */
 
-import React from 'react'
-import { render } from 'react-dom'
-import configureStore, { history } from './redux/configureStore'
-import sagas from './redux/sagas'
-import App from './App'
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import configureStore, { history } from './redux/configureStore';
+import sagas from './redux/sagas';
+import App from './App';
 
-// Initialize store
-const store = configureStore()
-sagas.forEach(saga => store.runSaga(saga))
+const store = configureStore();
+sagas.forEach((saga) => store.runSaga(saga));
 
-render(
+const container = document.getElementById('root');
+const root = createRoot(container);
+root.render(
   <App store={store} history={history} />,
-  document.getElementById('root')
-)
+);

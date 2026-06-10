@@ -1,0 +1,19 @@
+.google-auth-button {
+  position: relative;
+  display: inline-block;
+
+  .google-auth-button-label {
+    pointer-events: none;
+  }
+
+  .google-auth-button-overlay {
+    position: absolute;
+    inset: 0;
+    opacity: 0.001;
+    overflow: hidden;
+
+    > div {
+      height: 100%;
+    }
+  }
+}

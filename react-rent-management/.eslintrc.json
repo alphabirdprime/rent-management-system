@@ -1,0 +1,46 @@
+{
+  "ignorePatterns": ["build/**", "dist/**", "node_modules/**"],
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "jest": true
+  },
+  "extends": ["airbnb", "airbnb/hooks"],
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx"]
+      }
+    }
+  },
+  "rules": {
+    "no-console": "off",
+    "consistent-return": "off",
+    "no-bitwise": "off",
+    "no-param-reassign": "off",
+    "no-underscore-dangle": ["error", { "allow": ["_id"] }],
+    "max-len": "off",
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "react/forbid-prop-types": "off",
+    "react/sort-comp": "off",
+    "import/prefer-default-export": "off",
+    "import/no-extraneous-dependencies": ["error", {
+      "devDependencies": [
+        "**/*.test.js",
+        "**/*.config.js",
+        "**/*.config.cjs",
+        "e2e/**"
+      ]
+    }]
+  }
+}

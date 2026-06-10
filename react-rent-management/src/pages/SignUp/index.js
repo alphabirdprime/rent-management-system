@@ -1,93 +1,95 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { push } from 'connected-react-router'
-import { Link } from 'react-router-dom'
-import PropTypes from 'prop-types'
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import {
   Button,
   Paper,
   TextField,
   RadioGroup,
   FormControlLabel,
-  Radio
-} from '@material-ui/core'
-import GoogleLogin from 'react-google-login'
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
-import LoadingSpinner from '../../components/LoadingSpinner'
-import { Creators, Types } from '../../redux/actions/auth'
-import { goToDefaultPage, validateEmail } from '../../functions'
-import { ACTION_STATUS, USER_TYPE } from '../../constants'
-import config from '../../config'
-import './styles.scss'
+  Radio,
+} from '@mui/material';
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
+import { changeLocation as navigateTo } from '../../navigation';
+import GoogleAuthButton from '../../components/GoogleAuthButton';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import { Creators, Types } from '../../redux/actions/auth';
+import { goToDefaultPage, validateEmail } from '../../functions';
+import { ACTION_STATUS, USER_TYPE } from '../../constants';
+import config from '../../config';
+import './styles.scss';
 
 class View extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
-      email    : '',
-      password : '',
-      confirm  : '',
-      userType : USER_TYPE.CLIENT,
-    }
+      email: '',
+      password: '',
+      confirm: '',
+      userType: USER_TYPE.CLIENT,
+    };
   }
 
-  componentDidMount = () => {
-    const { auth, changeLocation } = this.props
+  componentDidMount() {
+    const { auth, changeLocation } = this.props;
     if (auth.user) {
-      goToDefaultPage(auth.user, changeLocation)
+      goToDefaultPage(auth.user, changeLocation);
     }
   }
 
-  componentDidUpdate = (prevProps) => {
+  componentDidUpdate(prevProps) {
     const {
       auth: prevAuth,
-      global: { status : prevStatus }
-    } = prevProps
+      global: { status: prevStatus },
+    } = prevProps;
     const {
       auth,
       global: { status },
-      changeLocation
-    } = this.props
+      changeLocation,
+    } = this.props;
     if (!prevAuth.user && auth.user) {
-      goToDefaultPage(auth.user, changeLocation)
+      goToDefaultPage(auth.user, changeLocation);
     }
     if (prevStatus[Types.SIGN_UP_EMAIL] !== status[Types.SIGN_UP_EMAIL]
       && status[Types.SIGN_UP_EMAIL] === ACTION_STATUS.SUCCESS) {
       this.setState({
-        email    : '',
-        password : '',
-        confirm  : '',
-      })
+        email: '',
+        password: '',
+        confirm: '',
+      });
     }
   }
 
   onSignUpEmail = () => {
-    const { signUpEmail } = this.props
-    const { email, password, userType } = this.state
-    signUpEmail(email, password, userType)
-  }
+    const { signUpEmail } = this.props;
+    const { email, password, userType } = this.state;
+    signUpEmail(email, password, userType);
+  };
 
-  onChangeValue = fieldName => (event) => {
-    this.setState({ [fieldName]: event.target.value })
-  }
+  onChangeValue = (fieldName) => (event) => {
+    this.setState({ [fieldName]: event.target.value });
+  };
 
-  onSuccessGoogle = (data) => {
-    const { signUpGoogle } = this.props
-    const { userType } = this.state
-    signUpGoogle(data.tokenObj.id_token, userType)
-  }
+  onSuccessGoogle = (idToken) => {
+    const { signUpGoogle } = this.props;
+    const { userType } = this.state;
+    signUpGoogle(idToken, userType);
+  };
 
   onResponseFacebook = (data) => {
     if (data.accessToken) {
-      console.log('facebook', data)
-      const { signUpFacebook } = this.props
-      const { userType } = this.state
-      signUpFacebook(data.accessToken, userType)
+      console.log('facebook', data);
+      const { signUpFacebook } = this.props;
+      const { userType } = this.state;
+      signUpFacebook(data.accessToken, userType);
     }
-  }
+  };
 
   renderContent() {
-    const { email, password, confirm, userType } = this.state
+    const {
+      email, password, confirm, userType,
+    } = this.state;
     return (
       <>
         <div className="content-div">
@@ -155,27 +157,17 @@ class View extends Component {
               <div> </div>
             </div>
             <div className="social-div">
-              <GoogleLogin
-                clientId={config.googleClientId}
-                render={renderProps => (
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={renderProps.onClick}
-                    disabled={renderProps.disabled}
-                  >
-                    Sign Up with Google
-                  </Button>
-                )}
+              <GoogleAuthButton
+                label="Sign Up with Google"
+                color="secondary"
                 onSuccess={this.onSuccessGoogle}
-                onFailure={e => console.log(e)}
-                cookiePolicy="single_host_origin"
+                onFailure={(e) => console.log(e)}
               />
               &nbsp;&nbsp;
               <FacebookLogin
                 appId={config.facebookAppId}
                 fields="email"
-                render={renderProps => (
+                render={(renderProps) => (
                   <Button
                     variant="contained"
                     color="primary"
@@ -194,42 +186,42 @@ class View extends Component {
           <Link to="/sign-in"> Already have an account? </Link>
         </div>
       </>
-    )
+    );
   }
 
   render() {
-    const { global: { status } } = this.props
+    const { global: { status } } = this.props;
     const loadingTypes = [
       Types.SIGN_UP_EMAIL,
       Types.SIGN_UP_GOOGLE,
       Types.SIGN_UP_FACEBOOK,
-    ]
+    ];
     return (
       <div className="signUp-page">
         { this.renderContent() }
-        { loadingTypes.map(t => status[t]).includes(ACTION_STATUS.REQUEST)
+        { loadingTypes.map((t) => status[t]).includes(ACTION_STATUS.REQUEST)
           && <LoadingSpinner /> }
       </div>
-    )
+    );
   }
 }
 
 View.propTypes = {
-  global         : PropTypes.object.isRequired,
-  auth           : PropTypes.object.isRequired,
-  changeLocation : PropTypes.func.isRequired,
-  signUpEmail    : PropTypes.func.isRequired,
-  signUpGoogle   : PropTypes.func.isRequired,
-  signUpFacebook : PropTypes.func.isRequired,
-}
+  global: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired,
+  changeLocation: PropTypes.func.isRequired,
+  signUpEmail: PropTypes.func.isRequired,
+  signUpGoogle: PropTypes.func.isRequired,
+  signUpFacebook: PropTypes.func.isRequired,
+};
 
-const mapStateToProps = store => ({
-  auth   : store.auth,
-  global : store.global,
-})
+const mapStateToProps = (store) => ({
+  auth: store.auth,
+  global: store.global,
+});
 const mapDispatchToProps = {
   ...Creators,
-  changeLocation: push,
-}
+  changeLocation: navigateTo,
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(View)
+export default connect(mapStateToProps, mapDispatchToProps)(View);
